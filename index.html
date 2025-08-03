@@ -1,23 +1,45 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rjbookpyq - GPSC Civil PYQ Practice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>rjbookpyq</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>GPSC Civil PYQ Practice</h1>
-    <div id="question-container"></div>
+    <h1>rjbookpyq - GPSC Civil PYQ Practice</h1>
+
     <div class="controls">
-      <button onclick="prevQuestion()">Previous</button>
-      <button onclick="nextQuestion()">Next</button>
-      <button onclick="checkAnswer()">Check Answer</button>
+      <select id="yearSelect">
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+      </select>
+      <button onclick="startTest()">Start Test</button>
     </div>
-    <div id="result"></div>
+
+    <div id="quizContainer" class="hidden">
+      <div class="questionBox">
+        <div id="questionText"></div>
+        <ul id="optionsList"></ul>
+      </div>
+
+      <div class="navigation">
+        <button onclick="prevQuestion()">Previous</button>
+        <button onclick="nextQuestion()">Next</button>
+        <button onclick="submitTest()">Submit</button>
+      </div>
+
+      <div id="timer">Time: 0:00</div>
+    </div>
+
+    <div id="resultContainer" class="hidden">
+      <h2>Test Completed</h2>
+      <p id="scoreDisplay"></p>
+      <button onclick="location.reload()">Restart</button>
+    </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
