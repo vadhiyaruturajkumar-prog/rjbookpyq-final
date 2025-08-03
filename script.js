@@ -1,53 +1,102 @@
+const questions = {
+  2023: [
+    {
+      question: "Which river is known as the lifeline of Gujarat?",
+      options: ["Sabarmati", "Tapi", "Mahi", "Narmada"],
+      answer: 3
+    },
+    {
+      question: "When was the Constitution of India adopted?",
+      options: ["15 August 1947", "26 January 1950", "26 November 1949", "2 October 1947"],
+      answer: 2
+    }
+  ],
+  2022: [
+    {
+      question: "Who was the first Governor General of India?",
+      options: ["Lord Canning", "Warren Hastings", "Lord Mountbatten", "Lord Dalhousie"],
+      answer: 1
+    }
+  ]
+};
 
-const questions = [
-  {
-    question: "Which of the following is a tributary of the Narmada River?",
-    options: ["Tapi", "Mahi", "Tawa", "Sabarmati"],
-    answer: "Tawa"
-  },
-  {
-    question: "In which year was the first GPSC exam held?",
-    options: ["1960", "1965", "1972", "1980"],
-    answer: "1960"
-  }
-];
+let currentQuestionIndex = 0;
+let selectedAnswers = [];
+let timer;
+let time = 0;
 
-let current = 0;
+function startTest() {
+  const year = document.getElementById("yearSelect").value;
+  window.currentYear = year;
+  currentQuestionIndex = 0;
+  selectedAnswers = Array(questions[year].length).fill(null);
 
-function displayQuestion() {
-  const container = document.getElementById('question-container');
-  const q = questions[current];
-  container.innerHTML = \`
-    <h2>Q${current + 1}: ${q.question}</h2>
-    <ul>
-      \${q.options.map(opt => `<li><label><input type="radio" name="opt" value="\${opt}"> \${opt}</label></li>`).join('')}
-    </ul>
-  \`;
-  document.getElementById('result').innerText = "";
+  document.querySelector(".controls").classList.add("hidden");
+  document.getElementById("quizContainer").classList.remove("hidden");
+
+  renderQuestion();
+  startTimer();
+}
+
+function renderQuestion() {
+  const q = questions[window.currentYear][currentQuestionIndex];
+  document.getElementById("questionText").textContent = `Q${currentQuestionIndex + 1}. ${q.question}`;
+
+  const optionsList = document.getElementById("optionsList");
+  optionsList.innerHTML = "";
+
+  q.options.forEach((opt, index) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <label>
+        <input type="radio" name="option" value="${index}" ${selectedAnswers[currentQuestionIndex] === index ? "checked" : ""}>
+        ${opt}
+      </label>
+    `;
+    li.querySelector("input").addEventListener("change", () => {
+      selectedAnswers[currentQuestionIndex] = index;
+    });
+    optionsList.appendChild(li);
+  });
 }
 
 function nextQuestion() {
-  if (current < questions.length - 1) {
-    current++;
-    displayQuestion();
+  if (currentQuestionIndex < questions[window.currentYear].length - 1) {
+    currentQuestionIndex++;
+    renderQuestion();
   }
 }
 
 function prevQuestion() {
-  if (current > 0) {
-    current--;
-    displayQuestion();
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    renderQuestion();
   }
 }
 
-function checkAnswer() {
-  const selected = document.querySelector('input[name="opt"]:checked');
-  const result = document.getElementById('result');
-  if (!selected) {
-    result.innerText = "Please select an answer.";
-    return;
-  }
-  result.innerText = selected.value === questions[current].answer ? "✅ Correct!" : "❌ Wrong. Correct answer: " + questions[current].answer;
+function submitTest() {
+  clearInterval(timer);
+  let score = 0;
+  const qList = questions[window.currentYear];
+  qList.forEach((q, i) => {
+    if (selectedAnswers[i] === q.answer) {
+      score++;
+    } else if (selectedAnswers[i] !== null) {
+      score -= 0.33;
+    }
+  });
+
+  document.getElementById("quizContainer").classList.add("hidden");
+  document.getElementById("resultContainer").classList.remove("hidden");
+  document.getElementById("scoreDisplay").textContent = `Your score: ${score.toFixed(2)} / ${qList.length}`;
 }
 
-window.onload = displayQuestion;
+function startTimer() {
+  time = 0;
+  timer = setInterval(() => {
+    time++;
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    document.getElementById("timer").textContent = `Time: ${minutes}:${seconds.toString().padStart(2, "0")}`;
+  }, 1000);
+}
